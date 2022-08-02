@@ -3,5 +3,6 @@
 
   background-size:cover;
   background-position: center;
-  background-image: url(C:\Users\Abhi\Desktop\JavaScript Developer\weatherapp\public\cloud.jpg);
+  /* background-image: url("https://images.pexels.com/photos/19670/pexels-photo.jpg"); */
+  background-image: url("https://images.pexels.com/photos/1486974/pexels-photo-1486974.jpeg");
 }
