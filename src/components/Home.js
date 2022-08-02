@@ -22,7 +22,8 @@ body{
     width:fit-content;
     padding:0.5rem 5rem;
     border-radius:2rem;
-    box-shadow: 3px 3px 1rem #f9c09b;
+    // box-shadow: 3px 3px 1rem #f9c09b;
+    box-shadow: 3px 3px 1rem black;
     margin-left:auto;
     margin-right:auto;
     margin-top:2rem;
@@ -30,9 +31,14 @@ body{
 
 }
 
-
+.Searchbox-field{
+    display:grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    padding-top:2rem;
+}
 .search-input {
-    margin:1rem;
+    // margin-top:2rem;
     width:20rem;
     font-size:1rem;
     padding: 0.8rem 2rem;
@@ -43,7 +49,7 @@ body{
     outline:none;
     border:none;
     border-radius: 1.5rem;
-    box-shadow: 3px 3px 0.6rem #f9c09b,3px 3px 0.6rem blue;
+    box-shadow: 3px 3px 0.6rem #f9c09b,3px 3px 0.6rem black;
 }
 .Container-bar {
     // background-color:#d3a78ba1;
@@ -58,7 +64,8 @@ body{
     margin-right:auto;
     color: white;
     // opacity:1;
-    box-shadow: 3px 3px 1rem #f9c09b;
+    // box-shadow: 3px 3px 1rem #f9c09b;
+    box-shadow: 3px 3px 1rem black;
 }
 .Container-bar span{
     text-shadow: 3px 3px 1rem blue;
@@ -69,14 +76,25 @@ body{
     outline:none;
     border:none;
     border-radius: 1.2rem;
-    margin:1rem 0.3rem;
+    margin:0 0.3rem;
     font-size:1rem;
     padding: 0.8rem 1.5rem;
     font-weight:600;
     background-color:#db6112;
     color:white;
     cursor: pointer;
-    box-shadow: 3px 3px 0.6rem #f9c09b ,3px 3px 0.6rem blue;
+    box-shadow: 3px 3px 0.6rem #f9c09b ,3px 3px 0.6rem black;
+}
+
+.validation{
+    color: #cd1818;
+    height:2rem;
+    // font-weight: 600;
+    // font-size: 1.5rem;
+    margin-top: 0;
+    padding-left: 2rem;
+    text-align: left;
+    font-family: "Times New Roman", Times, serif;
 }
 .heading{
     color:white;
@@ -99,7 +117,12 @@ body{
         margin:1rem;
         width:14rem;
     }
-
+    .Searchbox-field{
+        display:grid;
+        grid-template-columns:auto;
+    //     justify-content: center;
+    //     padding-top:2rem;
+    }
     .Container-bar {
         padding:0.6rem 0.8rem;
         font-size:1.1rem;
@@ -121,68 +144,80 @@ export default function Home() {
     const [Weather, setWeather] = useState({});
     const [Timedata, setTimedata] = useState({});
     const [City, setCity] = useState('');
+    const [Validation, setValidation] = useState('');
+
 
     const handleChange = (event) => {
+        setValidation("");
+        // document.getElementById("InputBox").style.border = "none";
+        // document.getElementById("InputBox").setAttribute("placeholder", "City...");
         const InputText = event.target.value;
         setCity(InputText);
     }
 
     const GetWeather = () => {
-        if( City !==""){
+        if (City !== "") {
 
             axios({
                 method: 'get',
                 url: `${Url}?q=${City}&APPID=${APIKey}`,
                 responseType: 'stream'
             })
-                .then((response) =>{
+                .then((response) => {
                     //   response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
                     console.log(response.data);
                     setWeather(response.data);
                     console.log(response.data.main);
-    
+
                     // console.log(response.sys);
                     // GetDateTime(weatherdata.data)
-    
+
                     let SR = new Date(response.data.sys.sunrise * 1000);
                     const sunrise = SR.toTimeString().split(" ")[0];
-    
+
                     let SS = new Date(response.data.sys.sunset * 1000);
                     const sunset = SS.toTimeString().split(" ")[0];
-    
+
                     const name = response.data.name;
                     const country = response.data.sys.country;
                     const CurrentDate = new Date(response.data.dt * 1000).toDateString();
-    
-    
+
+
                     return setTimedata({
                         Sunrise: { sunrise },
                         Sunset: { sunset },
                         City: { name },
                         Country: { country },
                         Current: { CurrentDate }
-    
+
                     });
                 }).catch(err => {
                     // Handle error
                     setWeather(err);
                     console.log(err)
                 })
-        } else{
+        } else {
             // alert("Enter City")
+
+            // document.getElementById("InputBox").style.border = "3px solid red";
+            setValidation("Enter City Name");
+
         }
     }
-    // const GetDateTime = (e) => {
 
-
-    // }
     return (
         <>
             <div className="Container-bg">
                 <HomeContainer>
                     <div className="Searchbox-field">
-                        <input type="text" onChange={handleChange} value={City} placeholder='Search...' className='search-input' />
-                        <button onClick={GetWeather} className='search-btn'>Search</button>
+                        <div>
+                            <input type="text" id='InputBox' onChange={handleChange} value={City} placeholder='City...' className='search-input' /> <br />
+                            <h3 className='validation' > <i> {Validation}</i></h3>
+                        </div>
+                        <div>
+
+                            <button onClick={GetWeather} className='search-btn'>Search</button>
+                        </div>
                     </div>
                     {(typeof Weather.main !== "undefined") ? (
                         <div>
@@ -211,23 +246,12 @@ export default function Home() {
                         </div>
                     ) : (
                         <div>
-                                <div className='nodataFound-container'>
-                                    <h2 className='heading'><i>{(typeof Weather.response  !== "undefined") ?  <strong> 
+                            <div className='nodataFound-container'>
+                                <h2 className='heading'><i>{(typeof Weather.response !== "undefined") ? <strong>
                                     <h2 className='heading'><i> {Weather.response.data.cod}</i> </h2>
-                                    <h3 className='heading'><i> {(Weather.response.data.message).toUpperCase()}</i> </h3>
-                                    </strong> : "Enter a City..."  }</i> </h2>
-                                </div>
-              
-                                {/* <div>
-
-                                    <div className='nodataFound-container'>
-                                        <h2 className='heading'><i> </i> </h2>
-                                        <h3 className='heading'><i> .</i> </h3>
-                                    </div>
-                                </div> */}
-
-
-                    
+                                    <h3 className='heading'><i> OOps! {(Weather.response.data.message).toUpperCase()}</i> </h3>
+                                </strong> : "Enter a City..."}</i> </h2>
+                            </div>
 
                         </div>
                     )}
