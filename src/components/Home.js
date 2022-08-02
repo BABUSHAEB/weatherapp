@@ -122,50 +122,59 @@ export default function Home() {
     const [Timedata, setTimedata] = useState({});
     const [City, setCity] = useState('');
 
-    const handleChange = (event)=> {
+    const handleChange = (event) => {
         const InputText = event.target.value;
         setCity(InputText);
-      }
+    }
 
     const GetWeather = () => {
-        axios({
-            method: 'get',
-            url: `${Url}?q=${City}&APPID=${APIKey}`,
-            responseType: 'stream'
-        })
-            .then(function (response) {
-                //   response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
-                console.log(response);
-                setWeather(response.data);
-                console.log(response.data.main);
+        if( City !==""){
 
-                // console.log(response.sys);
-                // GetDateTime(weatherdata.data)
-
-                let SR = new Date(response.data.sys.sunrise * 1000);
-                const sunrise = SR.toTimeString().split(" ")[0];
-        
-                let SS = new Date(response.data.sys.sunset * 1000);
-                const sunset = SS.toTimeString().split(" ")[0];
-        
-                const name = response.data.name;
-                const country = response.data.sys.country;
-                const CurrentDate = new Date(response.data.dt * 1000).toDateString();
-        
-        
-             return   setTimedata({
-                    Sunrise: { sunrise },
-                    Sunset: { sunset },
-                    City: { name },
-                    Country: { country },
-                    Current: { CurrentDate }
-        
-                });
-            });
+            axios({
+                method: 'get',
+                url: `${Url}?q=${City}&APPID=${APIKey}`,
+                responseType: 'stream'
+            })
+                .then((response) =>{
+                    //   response.data.pipe(fs.createWriteStream('ada_lovelace.jpg'))
+                    console.log(response.data);
+                    setWeather(response.data);
+                    console.log(response.data.main);
+    
+                    // console.log(response.sys);
+                    // GetDateTime(weatherdata.data)
+    
+                    let SR = new Date(response.data.sys.sunrise * 1000);
+                    const sunrise = SR.toTimeString().split(" ")[0];
+    
+                    let SS = new Date(response.data.sys.sunset * 1000);
+                    const sunset = SS.toTimeString().split(" ")[0];
+    
+                    const name = response.data.name;
+                    const country = response.data.sys.country;
+                    const CurrentDate = new Date(response.data.dt * 1000).toDateString();
+    
+    
+                    return setTimedata({
+                        Sunrise: { sunrise },
+                        Sunset: { sunset },
+                        City: { name },
+                        Country: { country },
+                        Current: { CurrentDate }
+    
+                    });
+                }).catch(err => {
+                    // Handle error
+                    setWeather(err);
+                    console.log(err)
+                })
+        } else{
+            // alert("Enter City")
+        }
     }
     // const GetDateTime = (e) => {
 
-      
+
     // }
     return (
         <>
@@ -186,24 +195,40 @@ export default function Home() {
                             </div>
                             <div className="Container">
                                 <div className='Container-bar'>
-                                   <span>Sunrise : {Timedata.Sunrise.sunrise}</span>
-                                   <span>Sunset : {Timedata.Sunset.sunset}</span>
+                                    <span>Sunrise : {Timedata.Sunrise.sunrise}</span>
+                                    <span>Sunset : {Timedata.Sunset.sunset}</span>
                                 </div>
                                 <div className='containe-box'>
                                     <h1 className='heading'> {Weather.weather[0].main}</h1>
-                                    <h2 className='heading'> {Math.round((Weather.main.temp)-273.15)} <sup>0</sup> C</h2>
+                                    <h2 className='heading'> {Math.round((Weather.main.temp) - 273.15)} <sup>0</sup> C</h2>
                                 </div>
                             </div>
                             <div className='Container-bar'>
-                                <span>Min: {Math.round((Weather.main.temp_min)-273.15)}<sup>o</sup>C</span>
-                                <span>Max: {Math.round((Weather.main.temp_max)-273.15)}<sup>o</sup>C</span>
-                                <span> Feel like: {Math.round((Weather.main.feels_like)-273.15)}<sup>o</sup>C</span>
+                                <span>Min: {Math.round((Weather.main.temp_min) - 273.15)}<sup>o</sup>C</span>
+                                <span>Max: {Math.round((Weather.main.temp_max) - 273.15)}<sup>o</sup>C</span>
+                                <span> Feel like: {Math.round((Weather.main.feels_like) - 273.15)}<sup>o</sup>C</span>
                             </div>
                         </div>
                     ) : (
-                        <div  className='nodataFound-container'>
+                        <div>
+                                <div className='nodataFound-container'>
+                                    <h2 className='heading'><i>{(typeof Weather.response  !== "undefined") ?  <strong> 
+                                    <h2 className='heading'><i> {Weather.response.data.cod}</i> </h2>
+                                    <h3 className='heading'><i> {(Weather.response.data.message).toUpperCase()}</i> </h3>
+                                    </strong> : "Enter a City..."  }</i> </h2>
+                                </div>
+              
+                                {/* <div>
 
-                            <h2 className='heading'><i> Enter a City...</i> </h2>
+                                    <div className='nodataFound-container'>
+                                        <h2 className='heading'><i> </i> </h2>
+                                        <h3 className='heading'><i> .</i> </h3>
+                                    </div>
+                                </div> */}
+
+
+                    
+
                         </div>
                     )}
                 </HomeContainer>
